@@ -1,13 +1,7 @@
 # File simplifies communication with DWave solvers. 
 
-from dwave.system.samplers import DWaveSampler
-from dwave.system.composites import EmbeddingComposite
 from dwave_qbsolv import QBSolv
-from hybrid.reference.kerberos import KerberosSampler
-from dimod.reference.samplers import ExactSolver
 import hybrid
-import dimod
-import neal
 
 # Creates hybrid solver with hardcoded configuration.
 def hybrid_solver():
