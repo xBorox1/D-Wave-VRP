@@ -29,8 +29,7 @@ class FullQuboSolver(VRPSolver):
         limits = [dests for _ in range(vehicles)]
 
         vrp_qubo = self.problem.get_qubo_with_limits(limits, only_one_const, order_const, capacity_const)
-        samples = DWaveSolvers.solve_qubo(vrp_qubo, solver_type = solver_type)
-        sample = samples[0]
+        sample = DWaveSolvers.solve_qubo(vrp_qubo, solver_type = solver_type)
         solution = VRPSolution(self.problem, sample, limits)
         return solution
 
@@ -48,8 +47,7 @@ class AveragePartitionSolver(VRPSolver):
         vrp_qubo = self.problem.get_qubo_with_both_limits(limits,
                 only_one_const, order_const, capacity_const)
 
-        samples = DWaveSolvers.solve_qubo(vrp_qubo, solver_type = solver_type)
-        sample = samples[0]
+        sample = DWaveSolvers.solve_qubo(vrp_qubo, solver_type = solver_type)
 
         solution = VRPSolution(self.problem, sample, max_limits)
         return solution

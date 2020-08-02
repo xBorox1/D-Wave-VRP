@@ -33,5 +33,5 @@ def get_solver(solver_type):
 def solve_qubo(qubo, solver_type = 'cpu'):
     sampler = get_solver(solver_type)
     response = sampler.sample_qubo(qubo.dict)
-    return list(response)[:1]
+    return list(response)[0]
     
