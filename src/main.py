@@ -1,5 +1,4 @@
 from qubo_helper import Qubo
-from tsp_problem import TSPProblem 
 from vrp_problem import VRPProblem
 from vrptw_problem import VRPTWProblem
 from vrptw_solvers import *

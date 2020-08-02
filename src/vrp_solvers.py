@@ -1,5 +1,4 @@
 from qubo_helper import Qubo
-from tsp_problem import TSPProblem 
 from vrp_problem import VRPProblem
 from vrp_solution import VRPSolution
 from itertools import product
