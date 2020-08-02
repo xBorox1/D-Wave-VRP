@@ -10,7 +10,7 @@ class VRPSolution:
             step = 0
             vehicle = 0
 
-            # Decoding solution from qubo sample
+            # Decoding solution from qubo sample.
             for (s, dest) in sample:
                 if sample[(s, dest)] == 1:
                     if dest != 0:
@@ -34,7 +34,7 @@ class VRPSolution:
 
             self.solution = result
 
-    # Checks capacity and visiting.
+    # Checks if solution is correct.
     def check(self):
         capacities = self.problem.capacities
         weights = self.problem.weights
@@ -60,6 +60,7 @@ class VRPSolution:
 
         return True
 
+    # Returns total cost of solution.
     def total_cost(self):
         costs = self.problem.costs
         source = self.problem.source
@@ -77,6 +78,7 @@ class VRPSolution:
 
         return cost
 
+    # Returns list of sums of weights for every vehicle.
     def all_weights(self):
         weights = self.problem.weights
         result = list()
@@ -89,6 +91,7 @@ class VRPSolution:
 
         return result
 
+    # Prints description of solution.
     def description(self):
         costs = self.problem.costs
         solution = self.solution
