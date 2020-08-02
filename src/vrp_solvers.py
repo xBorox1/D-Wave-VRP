@@ -198,7 +198,6 @@ class DBScanSolver(VRPSolver):
         problem = self.problem
         dests = problem.dests
         costs = problem.costs
-        time_costs = problem.time_costs
         sources = [problem.source]
         capacities = problem.capacities
         weights = problem.weights
@@ -220,7 +219,7 @@ class DBScanSolver(VRPSolver):
         if len(clusters) == vehicles:
             result = list()
             for cluster in clusters:
-                new_problem = VRPProblem(sources, costs, time_costs, [capacities[0]], cluster, weights)
+                new_problem = VRPProblem(sources, costs, [capacities[0]], cluster, weights)
                 solver = FullQuboSolver(new_problem)
                 solution = solver.solve(only_one_const, order_const, capacity_const,
                                     solver_type = solver_type).solution[0]
@@ -231,7 +230,7 @@ class DBScanSolver(VRPSolver):
         solutions.append(VRPSolution(problem, None, None, [[0]]))
 
         for cluster in clusters:
-            new_problem = VRPProblem(sources, costs, time_costs, [capacities[0]], cluster, weights,
+            new_problem = VRPProblem(sources, costs, [capacities[0]], cluster, weights,
                                  first_source = False, last_source = False)
             solver = FullQuboSolver(new_problem)
             solution = solver.solve(only_one_const, order_const, capacity_const,
@@ -241,24 +240,21 @@ class DBScanSolver(VRPSolver):
         clusters_num = len(clusters) + 1
         new_dests = [i for i in range(1, clusters_num)]
         new_costs = np.zeros((clusters_num, clusters_num), dtype=float)
-        new_time_costs = np.zeros((clusters_num, clusters_num), dtype=float)
         new_weights = np.zeros((clusters_num), dtype=int)
 
         for (i, j) in product(range(clusters_num), range(clusters_num)):
             if i == j:
                 new_costs[i][j] = 0
-                time_costs[i][j] = 0
                 continue
             id1 = solutions[i].solution[0][-1]
             id2 = solutions[j].solution[0][0]
             new_costs[i][j] = costs[id1][id2]
-            new_time_costs[i][j] = solutions[j].all_time_costs()[0] + time_costs[id1][id2]
 
         for i in range(clusters_num):
             for dest in solutions[i].solution[0]:
                 new_weights[i] += weights[dest]
 
-        new_problem = VRPProblem(sources, new_costs, new_time_costs, capacities, new_dests, new_weights)
+        new_problem = VRPProblem(sources, new_costs, capacities, new_dests, new_weights)
         solver = DBScanSolver(new_problem)
         compressed_solution = solver.solve(only_one_const, order_const, capacity_const, 
                             solver_type = solver_type).solution
@@ -276,13 +272,9 @@ class SolutionPartitioningSolver(VRPSolver):
 
     INF = 1000000000
 
-    def __init__(self, problem, solver, time_limits = None):
+    def __init__(self, problem, solver):
         self.problem = problem
         self.solver = solver
-        self.time_limits = time_limits
-        if time_limits == None:
-            size = len(problem.capacities)
-            self.time_limits = [self.INF for _ in range(size)]
     
     def _divide_solution_greedy(self, solution):
         solution = solution[1:-1]
@@ -314,9 +306,7 @@ class SolutionPartitioningSolver(VRPSolver):
     def _divide_solution_greedy_dp(self, solution):
         problem = self.problem
         capacities = problem.capacities
-        time_limits = self.time_limits
         costs = problem.costs
-        time_costs = problem.time_costs
         weights = problem.weights
 
         dests = len(solution)
@@ -335,19 +325,16 @@ class SolutionPartitioningSolver(VRPSolver):
                 dp[i][0] = self.INF
             for j in range(1, vehicles + 1):
                 cap = capacities[j-1]
-                time = time_limits[j-1]
                 pointer = i
                 dp[i][j] = dp[i][j-1]
                 prev_state[i][j] = i
-                while pointer > 0 and cap >= weights[solution[pointer]] and (pointer == i or time >= time_costs[solution[pointer]][solution[pointer + 1]]):
+                while pointer > 0 and cap >= weights[solution[pointer]]:
                     pointer -= 1
                     new_cost = div_costs[pointer] + dp[pointer][j-1]
                     if new_cost < dp[i][j]:
                         dp[i][j] = new_cost
                         prev_state[i][j] = pointer
                     cap -= weights[solution[pointer + 1]]
-                    if pointer != i - 1:
-                        time -= time_costs[solution[pointer + 1]][solution[pointer + 2]]
 
         new_solution = []
         pointer = dests - 1
@@ -403,9 +390,8 @@ class SolutionPartitioningSolver(VRPSolver):
         sources = [0]
         dests = problem.dests
         costs = problem.costs
-        time_costs = problem.time_costs
         new_capacities = [capacity]
-        new_problem = VRPProblem(sources, costs, time_costs, new_capacities, dests, weights)
+        new_problem = VRPProblem(sources, costs, new_capacities, dests, weights)
 
         if len(dests) == 0:
             sol = [[] for _ in range(len(problem.capacities))]

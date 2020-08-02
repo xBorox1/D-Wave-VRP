@@ -77,25 +77,6 @@ class VRPSolution:
 
         return cost
 
-    def all_time_costs(self):
-        time_costs = self.problem.time_costs
-        source = self.problem.source
-        solution = self.solution
-        result = list()
-
-        for vehicle_dests in solution:
-            if vehicle_dests == []:
-                result.append(0)
-                continue
-            prev = vehicle_dests[0]
-            cost = 0
-            for dest in vehicle_dests[1:]:
-                cost += time_costs[prev][dest]
-                prev = dest
-            result.append(cost)
-
-        return result
-
     def all_weights(self):
         weights = self.problem.weights
         result = list()
@@ -110,12 +91,10 @@ class VRPSolution:
 
     def description(self):
         costs = self.problem.costs
-        time_costs = self.problem.time_costs
         solution = self.solution
 
         vehicle_num = 0
         for vehicle_dests in solution:
-            time = 0
             cost = 0
 
             print('Vehicle number ', vehicle_num, ' : ')
@@ -130,15 +109,13 @@ class VRPSolution:
             prev = vehicle_dests[0]
             for dest in vehicle_dests[1:len(vehicle_dests) - 1]:
                 cost += costs[prev][dest]
-                time += time_costs[prev][dest]
-                print('    Destination number ', dests_num, ' : ', dest, ', reached at time ', time, '.')
+                print('    Destination number ', dests_num, ' : ', dest, '.')
                 dests_num += 1
                 prev = dest
 
             endpoint = vehicle_dests[len(vehicle_dests) - 1]
             cost += costs[prev][endpoint]
-            time += time_costs[prev][endpoint]
-            print('    Endpoint : ', endpoint, ', reached at time ', time, '.')
+            print('    Endpoint : ', endpoint, '.')
 
             print('')
             print('    Total cost of vehicle : ', cost)

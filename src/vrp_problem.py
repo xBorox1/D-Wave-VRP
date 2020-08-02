@@ -4,7 +4,7 @@ from itertools import combinations, product
 # VRP problem with multi-source
 class VRPProblem:
 
-    def __init__(self, sources, costs, time_costs, capacities, dests, weights,
+    def __init__(self, sources, costs, capacities, dests, weights,
             first_source = True, last_source = True):
         # Merging all sources into one source.
         source = 0
@@ -26,14 +26,10 @@ class VRPProblem:
                     out_nearest = s
             costs[source][dest] = costs[in_nearest][dest]
             costs[dest][source] = costs[dest][out_nearest]
-            time_costs[source][dest] = time_costs[in_nearest][dest]
-            time_costs[dest][source] = time_costs[dest][out_nearest]
             in_nearest_sources[dest] = in_nearest
             out_nearest_sources[dest] = out_nearest
-        time_costs[source][source] = 0
 
         self.costs = costs
-        self.time_costs = time_costs
         self.capacities = capacities
         self.dests = dests
         self.weights = weights

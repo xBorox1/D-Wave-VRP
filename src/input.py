@@ -110,7 +110,6 @@ def read_test(path):
 
     nodes_num = magazines_num + dests_num
 
-    time_windows = np.zeros((nodes_num), dtype=int)
     weights = np.zeros((nodes_num), dtype=int)
 
     for i in range(dests_num):
@@ -118,12 +117,9 @@ def read_test(path):
 
     # Creating costs and time_costs matrix.
     costs = np.zeros((nodes_num, nodes_num), dtype=float)
-    time_costs = np.zeros((nodes_num, nodes_num), dtype=float)
 
     for i, j in product(range(nodes_num), range(nodes_num)):
-        cost_line = in_file.readline().split()
-        costs[i][j] = float(cost_line[0])
-        time_costs[i][j] += float(cost_line[1])
+        costs[i][j] = int(in_file.readline())
 
     vehicles = int(in_file.readline())
     capacities = np.zeros((vehicles), dtype=int)
@@ -136,9 +132,7 @@ def read_test(path):
     result['sources'] = [i for i in range(magazines_num)]
     result['dests'] =  [i for i in range(magazines_num, nodes_num)]
     result['costs'] = costs
-    result['time_costs'] = time_costs
     result['weights'] = weights
-    result['time_windows'] = time_windows
     result['capacities'] = capacities
 
     in_file.close()
