@@ -17,26 +17,26 @@ class VRPSolver:
         self.problem = problem
 
     def solve(self, only_one_const, order_const, capacity_const,
-            solver_type = 'qbsolv', num_reads = 50):
+            solver_type = 'cpu'):
         pass
 
 class FullQuboSolver(VRPSolver):
     def solve(self, only_one_const, order_const, capacity_const,
-            solver_type = 'qbsolv', num_reads = 50):
+            solver_type = 'cpu'):
         dests = len(self.problem.dests)
         vehicles = len(self.problem.capacities)
 
         limits = [dests for _ in range(vehicles)]
 
         vrp_qubo = self.problem.get_qubo_with_limits(limits, only_one_const, order_const, capacity_const)
-        samples = DWaveSolvers.solve_qubo(vrp_qubo, solver_type = solver_type, num_reads = num_reads)
+        samples = DWaveSolvers.solve_qubo(vrp_qubo, solver_type = solver_type)
         sample = samples[0]
         solution = VRPSolution(self.problem, sample, limits)
         return solution
 
 class AveragePartitionSolver(VRPSolver):
     def solve(self, only_one_const, order_const, capacity_const,
-            solver_type = 'qbsolv', num_reads = 50, limit_radius = 1):
+            solver_type = 'cpu', limit_radius = 1):
         dests = len(self.problem.dests)
         vehicles = len(self.problem.capacities)
 
@@ -48,7 +48,7 @@ class AveragePartitionSolver(VRPSolver):
         vrp_qubo = self.problem.get_qubo_with_both_limits(limits,
                 only_one_const, order_const, capacity_const)
 
-        samples = DWaveSolvers.solve_qubo(vrp_qubo, solver_type = solver_type, num_reads = num_reads)
+        samples = DWaveSolvers.solve_qubo(vrp_qubo, solver_type = solver_type)
         sample = samples[0]
 
         solution = VRPSolution(self.problem, sample, max_limits)
@@ -196,7 +196,7 @@ class DBScanSolver(VRPSolver):
         return best_res
 
     def solve(self, only_one_const, order_const, capacity_const,
-            solver_type = 'qbsolv', num_reads = 50):
+            solver_type = 'cpu'):
         problem = self.problem
         dests = problem.dests
         costs = problem.costs
@@ -214,7 +214,7 @@ class DBScanSolver(VRPSolver):
         #if len(dests) <= self.MAX_LEN:
         #    solver = AveragePartitionSolver(problem)
         #    result = solver.solve(only_one_const, order_const, capacity_const,
-        #                        solver_type = solver_type, num_reads = num_reads).solution
+        #                        solver_type = solver_type).solution
         #    return VRPSolution(problem, None, None, result)
 
         clusters = self._recursive_dbscan(dests, costs, 0., self.MAX_DIST, vehicles, self.MAX_LEN, 1000)
@@ -225,7 +225,7 @@ class DBScanSolver(VRPSolver):
                 new_problem = VRPProblem(sources, costs, time_costs, [capacities[0]], cluster, weights)
                 solver = FullQuboSolver(new_problem)
                 solution = solver.solve(only_one_const, order_const, capacity_const,
-                                    solver_type = solver_type, num_reads = num_reads).solution[0]
+                                    solver_type = solver_type).solution[0]
                 result.append(solution)
             return VRPSolution(problem, None, None, result)
 
@@ -237,7 +237,7 @@ class DBScanSolver(VRPSolver):
                                  first_source = False, last_source = False)
             solver = FullQuboSolver(new_problem)
             solution = solver.solve(only_one_const, order_const, capacity_const,
-                                    solver_type = solver_type, num_reads = num_reads)
+                                    solver_type = solver_type)
             solutions.append(solution)
 
         clusters_num = len(clusters) + 1
@@ -263,7 +263,7 @@ class DBScanSolver(VRPSolver):
         new_problem = VRPProblem(sources, new_costs, new_time_costs, capacities, new_dests, new_weights)
         solver = DBScanSolver(new_problem)
         compressed_solution = solver.solve(only_one_const, order_const, capacity_const, 
-                            solver_type = solver_type, num_reads = num_reads).solution
+                            solver_type = solver_type).solution
 
         uncompressed_solution = list()
         for vehicle_dests in compressed_solution:
@@ -394,7 +394,7 @@ class SolutionPartitioningSolver(VRPSolver):
         return new_solution
 
     def solve(self, only_one_const, order_const, capacity_const,
-            solver_type = 'qbsolv', num_reads = 50):
+            solver_type = 'cpu'):
         problem = self.problem
         capacity = 0
         weights = problem.weights
@@ -416,7 +416,7 @@ class SolutionPartitioningSolver(VRPSolver):
         solver = self.solver
         solver.set_problem(new_problem)
         solution = solver.solve(only_one_const, order_const, capacity_const,
-            solver_type = solver_type, num_reads = num_reads)
+            solver_type = solver_type)
 
         sol = solution.solution[0]
         return self._divide_solution_random(sol)

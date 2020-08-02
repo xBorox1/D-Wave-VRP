@@ -10,11 +10,9 @@ import networkx as nx
 import numpy as np
 from input import *
 
-CAPACITY = 1000
-
 if __name__ == '__main__':
 
-    for t in ['example1']:
+    for t in ['example1', 'example2', 'example3']:
         print("Test : ", t)
 
         TEST = '../tests/' + t + '.test'
@@ -34,11 +32,13 @@ if __name__ == '__main__':
         capacity_const = 0. #not important in this example
         time_const = 0. #not important in this example
 
-        problem = VRPProblem(sources, costs, time_costs, capacities, dests, weigths, time_windows)
+        problem = VRPProblem(sources, costs, time_costs, capacities, dests, weigths)
         solver = SolutionPartitioningSolver(problem, DBScanSolver(problem, anti_noiser = False))
+        #solver = FullQuboSolver(problem)
+        #solver = AveragePartitionSolver(problem)
 
         result = solver.solve(only_one_const, order_const, capacity_const,
-                solver_type = 'qbsolv', num_reads = 500)
+                solver_type = 'cpu')
 
         if result == None or result.check() == False:
             print("Solver hasn't find solution.\n")
