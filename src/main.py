@@ -25,7 +25,6 @@ if __name__ == '__main__':
         capacities = test['capacities']
         dests = test['dests']
         weigths = test['weights']
-        time_windows = test['time_windows']
 
         only_one_const = 10000000.
         order_const = 1.

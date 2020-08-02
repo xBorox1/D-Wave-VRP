@@ -114,13 +114,7 @@ def read_test(path):
     weights = np.zeros((nodes_num), dtype=int)
 
     for i in range(dests_num):
-        order = in_file.readline().split()
-        
-        weight = int(order[0])
-        time_window = float(order[1]) + float(TIME_WINDOWS_RADIUS)
-
-        time_windows[i + magazines_num] = time_window
-        weights[i + magazines_num] = weight
+        weights[i + magazines_num] = int(in_file.readline())
 
     # Creating costs and time_costs matrix.
     costs = np.zeros((nodes_num, nodes_num), dtype=float)
