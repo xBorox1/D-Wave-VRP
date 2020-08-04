@@ -1,9 +1,19 @@
 from qubo_helper import Qubo
 from itertools import combinations, product
 
-# VRP problem with multi-source
+# VRP problem with multi-source.
+# Class has informations about sources, costs, destinations, weights and capacities.
+# Class provides methods to formule problem as QUBO problem.
 class VRPProblem:
 
+    # Parameters :
+    # sources - list of ids of magazines
+    # costs - 2d array with cost of travel between destinations.
+    # capacities - list of capacities of vehicles
+    # dests - list of destinations that needs to be served
+    # weights - list of weights of orders
+    # first_source - flag that says if we count travel between magazine and first destination to the cost
+    # last_source - flag that says if we count travel between last destination and magazine to the cost
     def __init__(self, sources, costs, capacities, dests, weights,
             first_source = True, last_source = True):
         # Merging all sources into one source.
@@ -53,11 +63,12 @@ class VRPProblem:
 
         return cap_qubo
 
+    # Returns qubo with coded information about costs between destinations.
     def get_order_qubo(self, start_step, final_step, dests, costs):
         source = self.source
         ord_qubo = Qubo()
 
-        # Order constraint
+        # Order constraints.
         for step in range(start_step, final_step):
             for dest1 in dests:
                 for dest2 in dests:
@@ -67,6 +78,8 @@ class VRPProblem:
 
         return ord_qubo
 
+    # Returns qubo with coded information about costs of travel from magazines to destinations.
+    # Used if first_source parameter is True.
     def get_first_dest_qubo(self, start_step, dests, costs, source):
         fir_qubo = Qubo()
 
@@ -77,6 +90,8 @@ class VRPProblem:
 
         return fir_qubo
 
+    # Returns qubo with coded information about costs of travel from destinations to magazines.
+    # Used if last_source parameter is True.
     def get_last_dest_qubo(self, final_step, dests, costs, source):
         las_qubo = Qubo()
 
@@ -87,22 +102,25 @@ class VRPProblem:
 
         return las_qubo
 
-    # All vehicles have number of destinations.
+    # Returns qubo with additional constraint, that every vehicle has
+    # specified number of deliveries that it need to serve.
     def get_qubo_with_partition(self, vehicle_partitions,
             only_one_const, order_const, capacity_const):
         limits = [(r, r) for r in vehicle_partitions]
         return self.get_qubo_with_both_limits(limits,
                 only_one_const, order_const, capacity_const)
 
+    # Returns qubo with additional constrainte that every vehicle has
+    # specified maximum number of deliveries that it can serve.
     def get_qubo_with_limits(self, vehicle_limits,
             only_one_const, order_const, capacity_const):
         limits = [(0, r) for r in vehicle_limits]
         return self.get_qubo_with_both_limits(limits,
                 only_one_const, order_const, capacity_const)
 
+    # Returns qubo with additional constraint that every behicle has
+    # specified minimum and maximum number of deliveries that it can serve.
     # vehicles_limits - list of pairs (a, b), a <= b
-    # All vehicles have limit of orders.
-    # To do that we have more steps and vehicles can 'wait' in source.
     def get_qubo_with_both_limits(self, vehicle_limits,
             only_one_const, order_const, capacity_const):
         steps = 0
@@ -175,3 +193,9 @@ class VRPProblem:
             start = max_final + 1
 
         return vrp_qubo
+
+    # Returns qubo without additional constaraints.
+    def get_full_qubo(self, only_one_const, order_const, capacity_const):
+        limits = [(0, len(self.weights)) for _ in self.capacities]
+        return self.get_qubo_with_both_limits(limits,
+            only_one_const, order_const, capacity_const)

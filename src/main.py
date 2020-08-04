@@ -1,7 +1,5 @@
 from qubo_helper import Qubo
 from vrp_problem import VRPProblem
-from vrptw_problem import VRPTWProblem
-from vrptw_solvers import *
 from vrp_solvers import *
 from itertools import product
 import DWaveSolvers
