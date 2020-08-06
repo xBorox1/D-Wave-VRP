@@ -24,15 +24,13 @@ if __name__ == '__main__':
 
         only_one_const = 10000000.
         order_const = 1.
-        capacity_const = 0. #not important in this example
 
         problem = VRPProblem(sources, costs, capacities, dests, weigths)
         solver = SolutionPartitioningSolver(problem, DBScanSolver(problem, anti_noiser = False))
         #solver = FullQuboSolver(problem)
         #solver = AveragePartitionSolver(problem)
 
-        result = solver.solve(only_one_const, order_const, capacity_const,
-                solver_type = 'cpu')
+        result = solver.solve(only_one_const, order_const, solver_type = 'cpu')
 
         if result == None or result.check() == False:
             print("Solver hasn't find solution.\n")

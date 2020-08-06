@@ -7,34 +7,36 @@ import networkx as nx
 import numpy as np
 from queue import Queue
 
-# Attributes : VRPProblem
+# Abstract class for VRP solvers.
 class VRPSolver:
+    # Attributes : VRPProblem
     def __init__(self, problem):
         self.problem = problem
 
     def set_problem(self, problem):
         self.problem = problem
 
-    def solve(self, only_one_const, order_const, capacity_const,
-            solver_type = 'cpu'):
+    def solve(self, only_one_const, order_const, solver_type = 'cpu'):
         pass
 
+# Solver solves VRP only by QUBO formulation.
 class FullQuboSolver(VRPSolver):
-    def solve(self, only_one_const, order_const, capacity_const,
-            solver_type = 'cpu'):
+    def solve(self, only_one_const, order_const, solver_type = 'cpu'):
         dests = len(self.problem.dests)
         vehicles = len(self.problem.capacities)
 
         limits = [dests for _ in range(vehicles)]
 
-        vrp_qubo = self.problem.get_qubo_with_limits(limits, only_one_const, order_const, capacity_const)
+        vrp_qubo = self.problem.get_qubo_with_limits(limits, only_one_const, order_const)
         sample = DWaveSolvers.solve_qubo(vrp_qubo, solver_type = solver_type)
         solution = VRPSolution(self.problem, sample, limits)
         return solution
 
+# Solver assumes that every vehicle serves approximately the same number of deliveries.
+# Additional parameter : limit_radius - maximum difference between served number of deliveries
+# and average number of deliveries that every vehicle serve.
 class AveragePartitionSolver(VRPSolver):
-    def solve(self, only_one_const, order_const, capacity_const,
-            solver_type = 'cpu', limit_radius = 1):
+    def solve(self, only_one_const, order_const, solver_type = 'cpu', limit_radius = 1):
         dests = len(self.problem.dests)
         vehicles = len(self.problem.capacities)
 
@@ -44,13 +46,14 @@ class AveragePartitionSolver(VRPSolver):
         max_limits = [r for (_, r) in limits]
 
         vrp_qubo = self.problem.get_qubo_with_both_limits(limits,
-                only_one_const, order_const, capacity_const)
+                only_one_const, order_const)
 
         sample = DWaveSolvers.solve_qubo(vrp_qubo, solver_type = solver_type)
 
         solution = VRPSolution(self.problem, sample, max_limits)
         return solution
 
+# Solver uses DBScan to divide problem into subproblems that can be solved effectively by FullQuboSolver.
 class DBScanSolver(VRPSolver):
 
     MAX_DIST = 100000000.
@@ -192,8 +195,7 @@ class DBScanSolver(VRPSolver):
 
         return best_res
 
-    def solve(self, only_one_const, order_const, capacity_const,
-            solver_type = 'cpu'):
+    def solve(self, only_one_const, order_const, solver_type = 'cpu'):
         problem = self.problem
         dests = problem.dests
         costs = problem.costs
@@ -209,7 +211,7 @@ class DBScanSolver(VRPSolver):
         # Some idea
         #if len(dests) <= self.MAX_LEN:
         #    solver = AveragePartitionSolver(problem)
-        #    result = solver.solve(only_one_const, order_const, capacity_const,
+        #    result = solver.solve(only_one_const, order_const,
         #                        solver_type = solver_type).solution
         #    return VRPSolution(problem, None, None, result)
 
@@ -220,7 +222,7 @@ class DBScanSolver(VRPSolver):
             for cluster in clusters:
                 new_problem = VRPProblem(sources, costs, [capacities[0]], cluster, weights)
                 solver = FullQuboSolver(new_problem)
-                solution = solver.solve(only_one_const, order_const, capacity_const,
+                solution = solver.solve(only_one_const, order_const,
                                     solver_type = solver_type).solution[0]
                 result.append(solution)
             return VRPSolution(problem, None, None, result)
@@ -232,8 +234,7 @@ class DBScanSolver(VRPSolver):
             new_problem = VRPProblem(sources, costs, [capacities[0]], cluster, weights,
                                  first_source = False, last_source = False)
             solver = FullQuboSolver(new_problem)
-            solution = solver.solve(only_one_const, order_const, capacity_const,
-                                    solver_type = solver_type)
+            solution = solver.solve(only_one_const, order_const, solver_type = solver_type)
             solutions.append(solution)
 
         clusters_num = len(clusters) + 1
@@ -255,7 +256,7 @@ class DBScanSolver(VRPSolver):
 
         new_problem = VRPProblem(sources, new_costs, capacities, new_dests, new_weights)
         solver = DBScanSolver(new_problem)
-        compressed_solution = solver.solve(only_one_const, order_const, capacity_const, 
+        compressed_solution = solver.solve(only_one_const, order_const, 
                             solver_type = solver_type).solution
 
         uncompressed_solution = list()
@@ -267,6 +268,7 @@ class DBScanSolver(VRPSolver):
 
         return VRPSolution(problem, None, None, uncompressed_solution)
 
+# Solver uses some solver to generate TSP Solution and tries to make VRP solution from it.
 class SolutionPartitioningSolver(VRPSolver):
 
     INF = 1000000000
@@ -377,8 +379,7 @@ class SolutionPartitioningSolver(VRPSolver):
 
         return new_solution
 
-    def solve(self, only_one_const, order_const, capacity_const,
-            solver_type = 'cpu'):
+    def solve(self, only_one_const, order_const, solver_type = 'cpu'):
         problem = self.problem
         capacity = 0
         weights = problem.weights
@@ -398,8 +399,7 @@ class SolutionPartitioningSolver(VRPSolver):
 
         solver = self.solver
         solver.set_problem(new_problem)
-        solution = solver.solve(only_one_const, order_const, capacity_const,
-            solver_type = solver_type)
+        solution = solver.solve(only_one_const, order_const, solver_type = solver_type)
 
         sol = solution.solution[0]
         return self._divide_solution_random(sol)

@@ -48,6 +48,7 @@ class VRPProblem:
         self.first_source = first_source
         self.last_source = last_source
 
+    # Returns qubo with information about capacities.
     def get_capacity_qubo(self, capacity, start_step, final_step):
         dests = self.dests
         weights = self.weights
@@ -63,7 +64,7 @@ class VRPProblem:
 
         return cap_qubo
 
-    # Returns qubo with coded information about costs between destinations.
+    # Returns qubo with information about costs between destinations.
     def get_order_qubo(self, start_step, final_step, dests, costs):
         source = self.source
         ord_qubo = Qubo()
@@ -105,24 +106,24 @@ class VRPProblem:
     # Returns qubo with additional constraint, that every vehicle has
     # specified number of deliveries that it need to serve.
     def get_qubo_with_partition(self, vehicle_partitions,
-            only_one_const, order_const, capacity_const):
+            only_one_const, order_const):
         limits = [(r, r) for r in vehicle_partitions]
         return self.get_qubo_with_both_limits(limits,
-                only_one_const, order_const, capacity_const)
+                only_one_const, order_const)
 
     # Returns qubo with additional constrainte that every vehicle has
     # specified maximum number of deliveries that it can serve.
     def get_qubo_with_limits(self, vehicle_limits,
-            only_one_const, order_const, capacity_const):
+            only_one_const, order_const):
         limits = [(0, r) for r in vehicle_limits]
         return self.get_qubo_with_both_limits(limits,
-                only_one_const, order_const, capacity_const)
+                only_one_const, order_const)
 
     # Returns qubo with additional constraint that every behicle has
     # specified minimum and maximum number of deliveries that it can serve.
-    # vehicles_limits - list of pairs (a, b), a <= b
+    # vehicles_limits - list of pairs (a, b), a <= b.
     def get_qubo_with_both_limits(self, vehicle_limits,
-            only_one_const, order_const, capacity_const):
+            only_one_const, order_const):
         steps = 0
         for (_, r) in vehicle_limits:
             steps += r
@@ -184,18 +185,12 @@ class VRPProblem:
                     las_qubo = self.get_last_dest_qubo(max_final, dests, costs, source)
                 vrp_qubo.merge_with(las_qubo, 1., order_const)
 
-            # Capacity constraints.
-            if capacity_const != 0.:
-                capacity = capacities[vehicle]
-                cap_qubo = self.get_capacity_qubo(capacity, start, max_final)
-                vrp_qubo.merge_with(cap_qubo, 1., capacity_const)
-
             start = max_final + 1
 
         return vrp_qubo
 
     # Returns qubo without additional constaraints.
-    def get_full_qubo(self, only_one_const, order_const, capacity_const):
+    def get_full_qubo(self, only_one_const, order_const):
         limits = [(0, len(self.weights)) for _ in self.capacities]
         return self.get_qubo_with_both_limits(limits,
-            only_one_const, order_const, capacity_const)
+            only_one_const, order_const)
