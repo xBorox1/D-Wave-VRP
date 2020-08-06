@@ -22,14 +22,9 @@ class VRPSolver:
 # Solver solves VRP only by QUBO formulation.
 class FullQuboSolver(VRPSolver):
     def solve(self, only_one_const, order_const, solver_type = 'cpu'):
-        dests = len(self.problem.dests)
-        vehicles = len(self.problem.capacities)
-
-        limits = [dests for _ in range(vehicles)]
-
-        vrp_qubo = self.problem.get_qubo_with_limits(limits, only_one_const, order_const)
+        vrp_qubo = self.problem.get_full_qubo(only_one_const, order_const)
         sample = DWaveSolvers.solve_qubo(vrp_qubo, solver_type = solver_type)
-        solution = VRPSolution(self.problem, sample, limits)
+        solution = VRPSolution(self.problem, sample)
         return solution
 
 # Solver assumes that every vehicle serves approximately the same number of deliveries.

@@ -1,10 +1,15 @@
 class VRPSolution:
-    def __init__(self, problem, sample, vehicle_limits, solution = None):
+    def __init__(self, problem, sample, vehicle_limits = None, solution = None):
         self.problem = problem
         
         if solution != None:
             self.solution = solution
         else:
+            if vehicle_limits == None:
+                dests = len(self.problem.dests)
+                vehicles = len(self.problem.capacities)
+                vehicle_limits = [dests for _ in range(vehicles)]
+
             result = list()
             vehicle_result = list()
             step = 0

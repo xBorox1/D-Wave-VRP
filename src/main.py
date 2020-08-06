@@ -26,8 +26,8 @@ if __name__ == '__main__':
         order_const = 1.
 
         problem = VRPProblem(sources, costs, capacities, dests, weigths)
-        solver = SolutionPartitioningSolver(problem, DBScanSolver(problem, anti_noiser = False))
-        #solver = FullQuboSolver(problem)
+        #solver = SolutionPartitioningSolver(problem, DBScanSolver(problem, anti_noiser = False))
+        solver = FullQuboSolver(problem)
         #solver = AveragePartitionSolver(problem)
 
         result = solver.solve(only_one_const, order_const, solver_type = 'cpu')

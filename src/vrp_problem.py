@@ -191,6 +191,8 @@ class VRPProblem:
 
     # Returns qubo without additional constaraints.
     def get_full_qubo(self, only_one_const, order_const):
-        limits = [(0, len(self.weights)) for _ in self.capacities]
-        return self.get_qubo_with_both_limits(limits,
-            only_one_const, order_const)
+        dests = len(self.dests)
+        vehicles = len(self.capacities)
+
+        limits = [dests for _ in range(vehicles)]
+        return self.get_qubo_with_limits(limits, only_one_const, order_const)
