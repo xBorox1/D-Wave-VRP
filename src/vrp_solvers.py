@@ -22,20 +22,25 @@ class VRPSolver:
 # Solver solves VRP only by QUBO formulation.
 class FullQuboSolver(VRPSolver):
     def solve(self, only_one_const, order_const, solver_type = 'cpu'):
-        vrp_qubo = self.problem.get_full_qubo(only_one_const, order_const)
-        sample = DWaveSolvers.solve_qubo(vrp_qubo, solver_type = solver_type)
+        qubo = self.problem.get_full_qubo(only_one_const, order_const)
+        sample = DWaveSolvers.solve_qubo(qubo, solver_type = solver_type)
         solution = VRPSolution(self.problem, sample)
         return solution
 
 # Solver assumes that every vehicle serves approximately the same number of deliveries.
 # Additional parameter : limit_radius - maximum difference between served number of deliveries
-# and average number of deliveries that every vehicle serve.
+# and average number of deliveries that every vehicle should serve.
 class AveragePartitionSolver(VRPSolver):
-    def solve(self, only_one_const, order_const, solver_type = 'cpu', limit_radius = 1):
+    def __init__(self, problem, limit_radius = 1):
+        self.problem = problem
+        self.limit_radius = limit_radius
+
+    def solve(self, only_one_const, order_const, solver_type = 'cpu'):
         dests = len(self.problem.dests)
         vehicles = len(self.problem.capacities)
 
         avg = int(dests / vehicles)
+        limit_radius = self.limit_radius
 
         limits = [(max(avg - limit_radius, 0), min(avg + limit_radius, dests)) for _ in range(vehicles)]
         max_limits = [r for (_, r) in limits]
