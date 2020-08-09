@@ -16,6 +16,11 @@ class VRPSolver:
     def set_problem(self, problem):
         self.problem = problem
 
+    # only_one_const - const in qubo making solution correct
+    # order_const - multiplier for costs in qubo
+    # It is recommended to set order_const = 1 and only_one_const
+    # big enough to make solutions correct. Bigger than sum of all
+    # costs should be enough.
     def solve(self, only_one_const, order_const, solver_type = 'cpu'):
         pass
 
@@ -28,7 +33,7 @@ class FullQuboSolver(VRPSolver):
         return solution
 
 # Solver assumes that every vehicle serves approximately the same number of deliveries.
-# Additional parameter : limit_radius - maximum difference between served number of deliveries
+# Additional attribute : limit_radius - maximum difference between served number of deliveries
 # and average number of deliveries that every vehicle should serve.
 class AveragePartitionSolver(VRPSolver):
     def __init__(self, problem, limit_radius = 1):
@@ -54,16 +59,19 @@ class AveragePartitionSolver(VRPSolver):
         return solution
 
 # Solver uses DBScan to divide problem into subproblems that can be solved effectively by FullQuboSolver.
+# Attributes : max_len - maximum number of deliveries in problems solved by FullQuboSolver.
+# anti_noiser : True if dbscan should eliminate singleton clusters, False otherwise.
 class DBScanSolver(VRPSolver):
 
-    MAX_DIST = 100000000.
-    MAX_LEN = 10
-    MAX_WEIGHT = 1000
-
-    def __init__(self, problem, anti_noiser = True):
+    def __init__(self, problem, max_len = 10, anti_noiser = True):
         self.problem = problem
         self.anti_noiser = anti_noiser
+        self.max_len = max_len
+        self.max_weight = max(problem.capacities)
+        self.max_dist = 2 * max(map(max, problem.costs))
 
+    # Returns subset of dests with elements x that satisfies
+    # costs[source][x] + costs[x][source] <= 2 * radius
     def _range_query(self, dests, costs, source, radius):
         result = list()
         for dest in dests:
@@ -71,6 +79,8 @@ class DBScanSolver(VRPSolver):
                 result.append(dest)
         return result
 
+    # Standard dbscan clustering dests.
+    # Returns list of clusters.
     def _dbscan(self, dests, costs, radius, min_size):
         clusters_num = -1
 
@@ -102,7 +112,7 @@ class DBScanSolver(VRPSolver):
 
         for dest in dests: 
             if states[dest] == -1:
-                min_dist = self.MAX_DIST
+                min_dist = self.max_dist
                 best_neighbour = -1
                 for d in dests:
                     if states[d] != -1:
@@ -124,6 +134,17 @@ class DBScanSolver(VRPSolver):
 
         return clusters
 
+    # Recursive dbscan. Returns list of clusters.
+    # dests - set that need to be clustered.
+    # costs - array with costs between dests.
+    # min_radius, max_radius - lower and upper bound for radius parameter
+    # in dbscan.
+    # clusters_num - expected maximum number of clusters. It is not guaranteed that 
+    # function won't return moe clusters.
+    # max_len - maximum size of a cluster. It is guaranteed that every cluster will
+    # have at most max_len elements.
+    # max_weight - maximum sum of deliveries' weights of a cluster. It is guaranteed that every cluster will
+    # have at most max_weight sum of weights.
     def _recursive_dbscan(self, dests, costs, min_radius, max_radius,
                           clusters_num, max_len, max_weight):
         best_res = [[d] for d in dests]
@@ -132,10 +153,10 @@ class DBScanSolver(VRPSolver):
         max_r = max_radius
         curr_r = max_r
 
+        # Searching best radius with binary search.
         while min_r + 1 < max_r:
             curr_r = (min_r + max_r) / 2
 
-            # TODO : min_size parameter
             clusters = self._dbscan(dests, costs, curr_r, 1)
 
             if len(clusters) < clusters_num:
@@ -145,16 +166,17 @@ class DBScanSolver(VRPSolver):
                 if len(clusters) < len(best_res):
                     best_res = clusters
 
+        # Recursive dbscan on clusters with too many elements. 
         for cluster in best_res:
             weight = 0
             for dest in cluster:
                 weight += self.problem.weights[dest]
             if len(cluster) > max_len or weight > max_weight:
                 best_res.remove(cluster)
-                # TODO : clusters_num parameter : 2 or clusters_num ?
-                best_res += self._recursive_dbscan(cluster, costs, 0., self.MAX_DIST, 2,
+                best_res += self._recursive_dbscan(cluster, costs, 0., self.max_dist, 2,
                                                    max_len, max_weight)
 
+        # Removing singleton clusters while they are and there is more than clusters_num clusters.
         if self.anti_noiser:
             while len(best_res) > clusters_num:
                 singleton = [0]
@@ -170,14 +192,14 @@ class DBScanSolver(VRPSolver):
 
                 one = singleton[0]
                 best_cluster = []
-                best_dist = self.MAX_DIST
+                best_dist = self.max_dist
 
                 for cluster in best_res:
                     if len(cluster) == max_len or cluster == singleton:
                         continue
 
                     weight = 0
-                    min_dist = self.MAX_DIST
+                    min_dist = self.max_dist
 
                     for dest in cluster:
                         weight += self.problem.weights[dest]
@@ -204,19 +226,13 @@ class DBScanSolver(VRPSolver):
         weights = problem.weights
         vehicles = len(problem.capacities)
 
-        # TODO : Is that correct?
         if len(dests) == 0:
             return VRPSolution(problem, None, None, [[]])
 
-        # Some idea
-        #if len(dests) <= self.MAX_LEN:
-        #    solver = AveragePartitionSolver(problem)
-        #    result = solver.solve(only_one_const, order_const,
-        #                        solver_type = solver_type).solution
-        #    return VRPSolution(problem, None, None, result)
+        clusters = self._recursive_dbscan(dests, costs, 0., self.max_dist, vehicles,
+                self.max_len, self.max_weight)
 
-        clusters = self._recursive_dbscan(dests, costs, 0., self.MAX_DIST, vehicles, self.MAX_LEN, 1000)
-
+        # If we have as much small clusters as vehicles, we can solve TSP for every cluster.
         if len(clusters) == vehicles:
             result = list()
             for cluster in clusters:
@@ -230,6 +246,7 @@ class DBScanSolver(VRPSolver):
         solutions = list()
         solutions.append(VRPSolution(problem, None, None, [[0]]))
 
+        # Solving TSP for every cluster.
         for cluster in clusters:
             new_problem = VRPProblem(sources, costs, [capacities[0]], cluster, weights,
                                  first_source = False, last_source = False)
@@ -237,6 +254,7 @@ class DBScanSolver(VRPSolver):
             solution = solver.solve(only_one_const, order_const, solver_type = solver_type)
             solutions.append(solution)
 
+        # Creating smaller instance of problem for DBScanSolver.
         clusters_num = len(clusters) + 1
         new_dests = [i for i in range(1, clusters_num)]
         new_costs = np.zeros((clusters_num, clusters_num), dtype=float)
@@ -259,6 +277,7 @@ class DBScanSolver(VRPSolver):
         compressed_solution = solver.solve(only_one_const, order_const, 
                             solver_type = solver_type).solution
 
+        # Achieving full solution from solution of smaller version.
         uncompressed_solution = list()
         for vehicle_dests in compressed_solution:
             uncompressed = list()
@@ -269,41 +288,17 @@ class DBScanSolver(VRPSolver):
         return VRPSolution(problem, None, None, uncompressed_solution)
 
 # Solver uses some solver to generate TSP Solution and tries to make VRP solution from it.
+# Attributes : solver - VRPSolver object. DBScanSolver is recomended.
+# random - number of permutations of vehicles that will be generate. 
 class SolutionPartitioningSolver(VRPSolver):
 
-    INF = 1000000000
-
-    def __init__(self, problem, solver):
+    def __init__(self, problem, solver, random = 100):
         self.problem = problem
         self.solver = solver
+        self.random = random
+        self.inf = 2 * sum(map(sum, problem.costs))
     
-    def _divide_solution_greedy(self, solution):
-        solution = solution[1:-1]
-        problem = self.problem
-        capacities = problem.capacities
-        costs = problem.costs
-        weights = problem.weights
-
-        new_solution = []
-        pointer = 0
-        dests = len(solution)
-
-        for cap in reversed(capacities):
-            actual_cap = cap
-            sub_dests = []
-            if pointer != dests:
-                sub_dests = [0]
-            while pointer < dests and actual_cap >= weights[solution[pointer]]:
-                actual_cap -= weights[solution[pointer]]
-                sub_dests.append(solution[pointer])
-                pointer += 1
-            if len(sub_dests) > 0:
-                sub_dests.append(0)
-            new_solution.append(sub_dests)
-
-        new_solution.reverse()
-        return VRPSolution(problem, None, None, new_solution)
-
+    # Divides TSP solution to connected parts that will be correct VRP solution.
     def _divide_solution_greedy_dp(self, solution):
         problem = self.problem
         capacities = problem.capacities
@@ -323,7 +318,7 @@ class SolutionPartitioningSolver(VRPSolver):
 
         for i in range(dests):
             if i != 0:
-                dp[i][0] = self.INF
+                dp[i][0] = self.inf
             for j in range(1, vehicles + 1):
                 cap = capacities[j-1]
                 pointer = i
@@ -355,12 +350,16 @@ class SolutionPartitioningSolver(VRPSolver):
         new_solution.reverse()
         return VRPSolution(problem, None, None, new_solution)
 
-    def _divide_solution_random(self, solution, random = 100):
+    # Creates random permutations of vehicles and using _divide_solution_greedy for
+    # each of them. 
+    # random - number of permutations.
+    def _divide_solution_random(self, solution):
+        random = self.random
         capacities = self.problem.capacities.copy()
         vehicles = len(capacities)
 
         new_solution = None
-        best_cost = self.INF
+        best_cost = self.inf
 
         for i in range(random):
             perm = np.random.permutation(vehicles)
@@ -386,7 +385,7 @@ class SolutionPartitioningSolver(VRPSolver):
         for w in weights:
             capacity += w
 
-        # Creating new problem with one vehicle
+        # Creating new problem with one vehicle.
         sources = [0]
         dests = problem.dests
         costs = problem.costs
