@@ -37,7 +37,6 @@ def read_full_test(path, graph_path, capacity = True):
     magazines_num = len(nodes_id)
 
     # Reading destinations.
-    next(in_file)
     dests_num = int(in_file.readline())
     nodes_num = dests_num + magazines_num
 
@@ -53,7 +52,6 @@ def read_full_test(path, graph_path, capacity = True):
             weights[i + magazines_num] = weight
 
     # Reading vehicles.
-    next(in_file)
     vehicles = int(in_file.readline())
     capacities = np.ones((vehicles), dtype=int)
 
@@ -76,6 +74,9 @@ def read_full_test(path, graph_path, capacity = True):
                 prev = node
 
     in_file.close()
+
+    sources = [i for i in range(magazines_num)]
+    dests =  [i for i in range(magazines_num, nodes_num)]
 
     return VRPProblem(sources, costs, capacities, dests, weights) 
 
