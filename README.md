@@ -24,3 +24,9 @@ It needs only test file. You need to provide information about sources, destinat
 
 Sources and destinations will be enumerated with natural numbers. If you have n sources and m destinations, sources will have numbers 0, 1, 2, ..., n - 1 and destinations will have numbers n, n + 1, n + 2, ..., n + m - 1. You need to provide (n + m) x (n + m) matrix with costs.   
 
+If you have test file, you can use function 'read_test' (from input.py) to obtain VRPProblem object.
+
+## Solvers
+
+Once you have VRPProblem object, you need to choose a solver. All solvers have the same 'solve' interface. You just need to provide VRPProblem object, two constants and information if you want to solve problem on cpu or qpu. You can find more detailed description in vrp_solvers.py. 
+
