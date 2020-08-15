@@ -1,0 +1,7 @@
+2 # number of sources
+2 # number of destinations
+0 1 1 1 # costs of travelling from first source to sources and destinations
+1 0 1 1 # costs of travelling from second source to sources and destinations
+1 1 0 1 # costs of travelling from first destination to sources and destinations
+1 1 1 0 # costs of travelling from second destination to sources and destinations
+2 # number of vehicles

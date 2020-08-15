@@ -1,0 +1,7 @@
+2 # number of sources
+2 5 # sources : 2 and 5
+2 # number of destinations
+1 2 # 1 is destination with weight 2
+4 4 # 4 is destination with weight 4
+2 # number of vehicles
+1 5 # vehicles have capacities 1 and 5

@@ -1,0 +1,6 @@
+# A cycle with 5 nodes
+1,2,10 # edge between 1 and 2 with cost 10
+2,3,5 # edge between 2 and 3 with cost 5
+3,4,2 # edge between 3 and 4 with cost 2
+4,5,3
+5,1,12
