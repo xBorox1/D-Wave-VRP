@@ -39,3 +39,7 @@ It solves vrp (and not cvrp) by formulating problem as QUBO and solving it with 
 It is FullQuboSolver, but with additional constraint that each vehicle serves approximately the same number of destinations. There is additional attribute 'limit_radius', which is maximum absolute difference between number of destinations that vehicle serves and average number of destinations that each vehicle serves. For small values of limit_radius, solver works effectively on tests with max 50 destinations.
 
 Note that if you have only one vehicle, this solver works exactly the same as FullQuboSolver.
+
+### DBScanSolver
+
+This solver uses more classical approaches. It solves problem by solving small instances of TSP problem with FullQuboSolver. 'max_len' attribute is maximum number of destinations in problems that will be solve by FullQuboSolver.
