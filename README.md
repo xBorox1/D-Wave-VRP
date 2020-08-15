@@ -61,3 +61,5 @@ Note that using this solver with AveragePartitionSolver is exactly the same as u
 ## Output
 
 'solve' function of solver returns VRPSolution object, which has solution attribute, which is list of lists of vehicles' paths. First and last numbers of list are sources, and between them are continous destinations.
+
+Note that independetly of used input format, sources and destinations will be enumerated. Numbers form 0 to (number of sources - 1) are sources and next numbers are destinations.
