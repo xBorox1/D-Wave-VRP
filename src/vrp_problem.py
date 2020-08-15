@@ -47,6 +47,7 @@ class VRPProblem:
         self.out_nearest_sources = out_nearest_sources
         self.first_source = first_source
         self.last_source = last_source
+        self.sources = sources
 
     # Returns qubo with information about capacities.
     def get_capacity_qubo(self, capacity, start_step, final_step):

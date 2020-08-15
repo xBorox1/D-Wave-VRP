@@ -59,7 +59,7 @@ def read_full_test(path, graph_path, capacity = True):
         capacities = [int(s) for s in in_file.readline().split() if s.isdigit()]
 
     # Generating costs matrix.
-    costs = np.zeros((nodes_num, nodes_num), dtype=float)
+    costs = np.zeros((nodes_num, nodes_num), dtype=int)
     for i in range(nodes_num):
         source = nodes_id[i]
         _, paths = nx.single_source_dijkstra(graph, source, weight = 'cost')
@@ -98,7 +98,7 @@ def read_test(path, capacity = True):
             weights[i + magazines_num] = w[i]
 
     # Reading costs.
-    costs = np.zeros((nodes_num, nodes_num), dtype=float)
+    costs = np.zeros((nodes_num, nodes_num), dtype=int)
     for i in range(nodes_num):
         costs[i] = [int(s) for s in in_file.readline().split() if s.isdigit()]
 
@@ -132,8 +132,8 @@ def create_test(in_path, graph_path, out_path, capacity = True):
 
     # Weights of destinations.
     if capacity:
-        for dest in test['dests']:
-            out_file.write(test.weights[dest]  + ' ')
+        for dest in test.dests:
+            out_file.write(str(test.weights[dest])  + ' ')
         out_file.write('\n')
 
     # Costs.
@@ -146,7 +146,7 @@ def create_test(in_path, graph_path, out_path, capacity = True):
     # Vehicles.
     out_file.write(str(len(test.capacities)) + '\n')
     if capacity:
-        for i in range(vehicles):
+        for i in range(len(test.capacities)):
             out_file.write(str(test.capacities[i]) + ' ')
         out_file.write('\n')
 

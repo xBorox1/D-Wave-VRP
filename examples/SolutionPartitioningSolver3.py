@@ -10,18 +10,16 @@ from input import *
 
 if __name__ == '__main__':
 
-    graph_path = '../graphs/medium.csv'
-
     # Parameters for solve function.
     only_one_const = 10000000.
     order_const = 1.
 
-    for t in ['example_medium1', 'example_medium2', 'example_medium3']:
+    for t in ['example_medium4', 'example_medium5', 'example_medium6']:
         print("Test : ", t)
 
         # Reading problem from file.
         path = '../tests/cvrp/' + t + '.test'
-        problem = read_full_test(path, graph_path, capacity = True)
+        problem = read_test(path, capacity = True)
 
         # Solving problem on SolutionPartitioningSolver.
         solver = SolutionPartitioningSolver(problem, DBScanSolver(problem, anti_noiser = True))
