@@ -28,5 +28,14 @@ If you have test file, you can use function 'read_test' (from input.py) to obtai
 
 ## Solvers
 
-Once you have VRPProblem object, you need to choose a solver. All solvers have the same 'solve' interface. You just need to provide VRPProblem object, two constants and information if you want to solve problem on cpu or qpu. You can find more detailed description in vrp_solvers.py. 
+Once you have VRPProblem object, you need to choose a solver. All solvers have the same 'solve' interface. You just need to provide VRPProblem object, two constants and information if you want to solve problem on cpu or qpu. You can find more detailed description in vrp_solvers.py. You can find examples of using every solver in examples directory.
 
+### FullQuboSolver
+
+It solves vrp (and not cvrp) by formulating problem as QUBO and solving it with D-Waves solver. It's the weakest solver that works effectively on problems with max 30 destinations and few (1-3) vehicles. 
+
+### AveragePartitionSolver
+
+It is FullQuboSolver, but with additional constraint that each vehicle serves approximately the same number of destinations. There is additional attribute 'limit_radius', which is maximum absolute difference between number of destinations that vehicle serves and average number of destinations that each vehicle serves. For small values of limit_radius, solver works effectively on tests with max 50 destinations.
+
+Note that if you have only one vehicle, this solver works exactly the same as FullQuboSolver.
