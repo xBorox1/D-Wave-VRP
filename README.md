@@ -42,4 +42,22 @@ Note that if you have only one vehicle, this solver works exactly the same as Fu
 
 ### DBScanSolver
 
-This solver uses more classical approaches. It solves problem by solving small instances of TSP problem with FullQuboSolver. 'max_len' attribute is maximum number of destinations in problems that will be solve by FullQuboSolver.
+This solver uses more classical approaches. It solves problem by solving small instances of TSP problem with FullQuboSolver. 'max_len' attribute is maximum number of destinations in problems that will be solve by FullQuboSolver. It has also 'anti_noiser' parameter, which says solver if it needs to get rid of singleton clusters in dbscan. It is expected to that setting 'anti_noiser' False would work better if there is a lot of isolated destinations in a problem.
+
+Note that default 'max_len' attribute is 10. It is so small that FullQuboSolver can find the best solution. Experiments shows that this value works effectively on tests with 250 destinations. But of course, I encourage to experiment with bigger values of this parameter on different tests.
+
+Also, I want to optimize classical parts of this solver to make bigger experiments possible.
+
+This solver is for vrp, but it is implemented some prototype of cvrp in it, which should work when all capacities are the same.
+
+### SolutionPartitioningSolver
+
+This is vrp and cvrp solver, which use another solver ('solver' attribute) to solve TSP, and then tries to divide solution to consecutive parts that will be served by vehicles. There is also 'random' attribute. Bigger value of it should give better solutions with bigger execution time.
+
+Using this solver with DBScanSolver should give the best effect. On smaller tests, you can use it with FullQuboSolver, to reduce size of QUBO and achieve good solution for tests with number of destinations up to 50.
+
+Note that using this solver with AveragePartitionSolver is exactly the same as using it with FullQuboSolver.
+
+## Output
+
+'solve' function of solver returns VRPSolution object, which has solution attribute, which is list of lists of vehicles' paths. First and last numbers of list are sources, and between them are continous destinations.
