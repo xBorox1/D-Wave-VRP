@@ -30,7 +30,7 @@ class Qubo:
         self.create_not_exist_field(field)
         self.dict[field] += value
 
-    # Merges qubo qith another qubo. Consts parameters define 'weight' of each qubo.
+    # Merges qubo with another qubo. Consts parameters define 'weight' of each qubo.
     def merge_with(self, qubo, const1, const2):
         for field in self.dict:
             self.dict[field] *= const1

@@ -112,7 +112,7 @@ class VRPProblem:
         return self.get_qubo_with_both_limits(limits,
                 only_one_const, order_const)
 
-    # Returns qubo with additional constrainte that every vehicle has
+    # Returns qubo with additional constraint, that every vehicle has
     # specified maximum number of deliveries that it can serve.
     def get_qubo_with_limits(self, vehicle_limits,
             only_one_const, order_const):
@@ -120,7 +120,7 @@ class VRPProblem:
         return self.get_qubo_with_both_limits(limits,
                 only_one_const, order_const)
 
-    # Returns qubo with additional constraint that every behicle has
+    # Returns qubo with additional constraint that every vehicle has
     # specified minimum and maximum number of deliveries that it can serve.
     # vehicles_limits - list of pairs (a, b), a <= b.
     def get_qubo_with_both_limits(self, vehicle_limits,
@@ -190,7 +190,7 @@ class VRPProblem:
 
         return vrp_qubo
 
-    # Returns qubo without additional constaraints.
+    # Returns qubo without additional constraints.
     def get_full_qubo(self, only_one_const, order_const):
         dests = len(self.dests)
         vehicles = len(self.capacities)

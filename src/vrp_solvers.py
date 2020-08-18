@@ -140,7 +140,7 @@ class DBScanSolver(VRPSolver):
     # min_radius, max_radius - lower and upper bound for radius parameter
     # in dbscan.
     # clusters_num - expected maximum number of clusters. It is not guaranteed that 
-    # function won't return moe clusters.
+    # function won't return more clusters.
     # max_len - maximum size of a cluster. It is guaranteed that every cluster will
     # have at most max_len elements.
     # max_weight - maximum sum of deliveries' weights of a cluster. It is guaranteed that every cluster will
@@ -298,7 +298,7 @@ class SolutionPartitioningSolver(VRPSolver):
         self.random = random
         self.inf = 2 * sum(map(sum, problem.costs))
     
-    # Divides TSP solution to connected parts that will be correct VRP solution.
+    # Divides TSP solution to continous parts that will be correct VRP solution.
     def _divide_solution_greedy_dp(self, solution):
         problem = self.problem
         capacities = problem.capacities
