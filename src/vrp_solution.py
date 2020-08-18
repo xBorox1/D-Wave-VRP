@@ -1,5 +1,17 @@
+# Solution of VRP problem with multi-source. 
+# Class can decode solution from solution of QUBO.
+# Class provides methods to check and get informations about solution.
 class VRPSolution:
-    def __init__(self, problem, sample, vehicle_limits = None, solution = None):
+
+    # Parameters :
+    # problem - VRPProblem object
+    # sample - QUBO solution returned by D-Wave
+    # vehicle_limits - maximum number of deliveries that vehicles could serve. Used only
+    # to decode solution from QUBO solution. Used only by AveragePartitionSolver.
+    # solution - solution in final form : list of the lists of vehicles paths. Used to
+    # create VRPSolution other way than from QUBO solution. 
+    # It is needed to provide sample or solution parameter.
+    def __init__(self, problem, sample = None, vehicle_limits = None, solution = None):
         self.problem = problem
         
         if solution != None:
