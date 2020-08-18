@@ -28,7 +28,7 @@ If you have a test file, you can use function 'read_test' (from input.py) to obt
 
 ## Solvers
 
-Once you have a VRPProblem object, you need to choose a solver. All solvers have the same 'solve' interface. You just need to provide a VRPProblem object, two constants and information if you want to solve problem on CPU or GPU. You can find more detailed description in vrp_solvers.py. You can find examples of using every solver in the 'examples' directory.
+Once you have a VRPProblem object, you need to choose a solver. All solvers have the same 'solve' interface. You just need to provide a VRPProblem object, two constants and information if you want to solve problem on CPU or QPU. You can find more detailed description in vrp_solvers.py. You can find examples of using every solver in the 'examples' directory.
 
 ### FullQuboSolver
 
