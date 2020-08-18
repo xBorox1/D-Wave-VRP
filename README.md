@@ -6,6 +6,10 @@ This repository contains a code of a few quantum computing algorithms for solvin
 
 Firstly, you need to be able to use D-Wave Ocean platform. In order to do that, follow this documentation https://docs.ocean.dwavesys.com/en/stable/overview/install.html.
 
+You can use this code without knowledge how to use D-Wave Ocean.
+
+If you want to change something in communication with D-Wave, check DWaveSolvers.py. There you can change solvers' configuration and change 'solve_qubo' function. As long as 'solve_qubo' function returns QUBO solution like all D-Waves solvers, the rest of the code should work properly. 
+
 ## Input
 
 There are two input formats. You can find examples in the 'formats' directory.
