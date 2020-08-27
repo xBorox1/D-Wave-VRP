@@ -1,8 +1,6 @@
 dwave-cloud-client==0.7.2
-dwave-drivers==0.4.4
 dwave-hybrid==0.4.3
 dwave-inspector==0.1.5
-dwave-inspectorapp==0.1.4
 dwave-neal==0.5.4
 dwave-networkx==0.8.6
 dwave-ocean-sdk==2.1.1
