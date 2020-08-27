@@ -8,7 +8,7 @@ Firstly, you need to be able to use D-Wave Ocean platform. In order to do that, 
 
 You can use this code without knowledge how to use D-Wave Ocean.
 
-If you want to change something in communication with D-Wave, check DWaveSolvers.py. There you can change solvers' configuration and change 'solve_qubo' function. As long as 'solve_qubo' function returns QUBO solution like all D-Waves solvers, the rest of the code should work properly. 
+If you want to change something in communication with D-Wave, check DWaveSolvers.py. There you can change solvers' configuration and change 'solve_qubo' function. As long as 'solve_qubo' function returns QUBO solution like all D-Wave's solvers, the rest of the code should work properly. 
 
 ## Input
 
@@ -36,7 +36,7 @@ Once you have a VRPProblem object, you need to choose a solver. All solvers have
 
 ### FullQuboSolver
 
-It solves MDVRP (and not CMDVRP) by formulating problem as QUBO and solving it with D-Waves solver. It's the weakest solver that works effectively on problems with max 30 destinations and few (1-3) vehicles. 
+It solves MDVRP (and not CMDVRP) by formulating problem as QUBO and solving it with D-Wave's solver. It's the weakest solver that works effectively on problems with max 30 destinations and few (1-3) vehicles. 
 
 ### AveragePartitionSolver
 
