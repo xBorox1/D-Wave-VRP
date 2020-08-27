@@ -4,9 +4,11 @@ This repository contains a code of a few quantum computing algorithms for solvin
 
 ## Getting started
 
-Firstly, you need to be able to use D-Wave Ocean platform. In order to do that, follow this documentation https://docs.ocean.dwavesys.com/en/stable/overview/install.html.
+Firstly, you need to be able to use D-Wave Ocean platform. In order to do that, follow this documentation https://docs.ocean.dwavesys.com/en/stable/overview/install.html. 
 
-You can use this code without knowledge how to use D-Wave Ocean.
+You also need to install all other required packages. In order to do that, you have to run the command "pip3 install -r requirements.txt" in a folder with the file "requirements.txt".
+
+Then, you can start running the solvers (e.g., you can run scripts from the "examples" directory).
 
 If you want to change something in communication with D-Wave, check DWaveSolvers.py. There you can change solvers' configuration and change 'solve_qubo' function. As long as 'solve_qubo' function returns QUBO solution like all D-Wave's solvers, the rest of the code should work properly. 
 
