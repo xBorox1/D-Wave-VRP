@@ -69,3 +69,6 @@ Note that using this solver with AveragePartitionSolver is exactly the same as u
 'solve' function of solver returns VRPSolution object, which has a solution attribute - a list of lists of vehicles' paths. The first and last numbers on these lists are depots, and continous destinations between them.
 
 Note that independently on the used input format, depots and destinations are enumerated. Numbers from 0 to (number of depots - 1) are depots and next numbers are destinations.
+
+## License
+Released under the Apache License 2.0. See LICENSE file.
