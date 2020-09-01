@@ -8,7 +8,7 @@ Firstly, you need to be able to use D-Wave Ocean platform. In order to do that, 
 
 You also need to install all other required packages. In order to do that, you have to run the command "pip3 install -r requirements.txt" in a folder with the file "requirements.txt".
 
-Then, you can start running the solvers (e.g., you can run scripts from the "examples" directory).
+Then, you can start running the solvers (e.g., you can run scripts from the "examples" directory, e.g., python3 SolutionPartitioningSolver.py).
 
 If you want to change something in communication with D-Wave, check DWaveSolvers.py. There you can change solvers' configuration and change 'solve_qubo' function. As long as 'solve_qubo' function returns QUBO solution like all D-Wave's solvers, the rest of the code should work properly. 
 
