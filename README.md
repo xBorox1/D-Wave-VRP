@@ -71,4 +71,4 @@ Note that using this solver with AveragePartitionSolver is exactly the same as u
 Note that independently on the used input format, depots and destinations are enumerated. Numbers from 0 to (number of depots - 1) are depots and next numbers are destinations.
 
 ## License
-Released under the Apache License 2.0. See LICENSE file.
+Released under the Apache License 2.0. See [LICENSE](https://github.com/xBorox1/D-Wave-VRP/blob/master/src/LICENSE) file.
