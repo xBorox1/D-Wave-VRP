@@ -72,5 +72,18 @@ Note that using this solver with AveragePartitionSolver is exactly the same as u
 
 Note that independently on the used input format, depots and destinations are enumerated. Numbers from 0 to (number of depots - 1) are depots and next numbers are destinations.
 
+## Code overview
+
+* DwaveSolvers.py contains interface for our solvers to communicate with D-Wave
+* input.py contains functions to read problem instantion from input files
+* qubo_helper.py contains Qubo class which helps creating QUBO (i.e. merging two QUBOs) 
+* vrp_problem.py contains VRPProblem class which contains informations about problem and provides methods to formule problem as QUBO
+* vrp_solvers.py contains our solvers
+* vrp_solution.py contains VRPSolution class which represent problems solution
+
+## Code specifics
+
+
+
 ## License
 Released under the Apache License 2.0. See [LICENSE](https://github.com/xBorox1/D-Wave-VRP/blob/master/src/LICENSE) file.
