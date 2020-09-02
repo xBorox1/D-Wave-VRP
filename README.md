@@ -81,9 +81,5 @@ Note that independently on the used input format, depots and destinations are en
 * vrp_solvers.py contains our solvers
 * vrp_solution.py contains VRPSolution class which represent problems solution
 
-## Code specifics
-
-
-
 ## License
 Released under the Apache License 2.0. See [LICENSE](https://github.com/xBorox1/D-Wave-VRP/blob/master/src/LICENSE) file.
