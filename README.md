@@ -74,6 +74,7 @@ Note that independently on the used input format, depots and destinations are en
 
 ## Code overview
 
+* all code is in 'src' directory
 * DwaveSolvers.py contains interface for our solvers to communicate with D-Wave
 * input.py contains functions to read problem instantion from input files
 * qubo_helper.py contains Qubo class which helps creating QUBO (i.e. merging two QUBOs) 
