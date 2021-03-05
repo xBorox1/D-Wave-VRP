@@ -2,7 +2,10 @@
 # It makes solving cvrp possible with using DBScanSolver.
 
 import sys
-sys.path.insert(1, '../src')
+import os
+
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(project_dir, 'src'))
 
 from vrp_solvers import SolutionPartitioningSolver, DBScanSolver
 import DWaveSolvers
@@ -18,7 +21,7 @@ if __name__ == '__main__':
         print("Test : ", t)
 
         # Reading problem from file.
-        path = '../tests/cvrp/' + t + '.test'
+        path = os.path.join(project_dir, 'tests/cvrp/' + t + '.test')
         problem = read_test(path, capacity = True)
 
         # Solving problem on SolutionPartitioningSolver.
